@@ -1,20 +1,13 @@
 'use strict';
-// empty array
-var array = [];
-//
-var ARRAY_ELEMENT_NUMBER = 8;
-// rooms number
-var ROOMS = [2, 6];
-var GUEST_MIN_MAX = [1, 4];
-var Y_MIN_MAX = [130, 630];
-var PRICE_MIN_MAX = [300, 5000];
-// types
+var ELEMENT_NUMBER = 8;
+var ROOMS = [1, 4];
+var GUEST_LIMITS = [1, 4];
+var Y_LIMITS = [130, 630];
+var X_LIMITS = [200, 800];
+var PRICE_LIMITS = [500, 10000];
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
-//
-var CHECKIN = ['12:00', '13:00', '14:00'];
-//
-var CHECKOUT = ['12:00', '13:00', '14:00'];
-// features
+var CHECKINS = ['12:00', '13:00', '14:00'];
+var CHECKOUTS = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
@@ -33,7 +26,7 @@ var generateRandomIndices = function (minobj, maxobj, min, max) {
   }
   return randomIndices;
 };
-
+// function to take random number of objects from data
 var generateRandomParts = function (minobj, maxobj, min, max, data) {
   var indices = generateRandomIndices(minobj, maxobj, min, max);
   var number = indices.length;
@@ -44,26 +37,28 @@ var generateRandomParts = function (minobj, maxobj, min, max, data) {
   return parts;
 };
 
+var labelTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+
 // generate random data
 var getRandomObject = function () {
   var xx = generateRandomNumber(1, 8);
-  var xLoc = generateRandomNumber(200, 500);
-  var yLoc = generateRandomNumber(Y_MIN_MAX[0], Y_MIN_MAX[1]);
-  var price = generateRandomNumber(PRICE_MIN_MAX[0], PRICE_MIN_MAX[1]);
+  var xLoc = generateRandomNumber(X_LIMITS[0], X_LIMITS[1]);
+  var yLoc = generateRandomNumber(Y_LIMITS[0], Y_LIMITS[1]);
+  var price = generateRandomNumber(PRICE_LIMITS[0], PRICE_LIMITS[1]);
   var type = TYPES[generateRandomNumber(0, TYPES.length - 1)];
   var rooms = generateRandomNumber(ROOMS[0], ROOMS[1]);
-  var guests = generateRandomNumber(GUEST_MIN_MAX[0], GUEST_MIN_MAX[1]);
-  var chekin = CHECKIN[generateRandomNumber(0, CHECKIN.length - 1)];
-  var chekout = CHECKOUT[generateRandomNumber(0, CHECKOUT.length - 1)];
+  var guests = generateRandomNumber(GUEST_LIMITS[0], GUEST_LIMITS[1]);
+  var chekin = CHECKINS[generateRandomNumber(0, CHECKINS.length - 1)];
+  var chekout = CHECKOUTS[generateRandomNumber(0, CHECKOUTS.length - 1)];
   var features = generateRandomParts(1, FEATURES.length, 0, FEATURES.length - 1, FEATURES);
   var photos = generateRandomParts(1, PHOTOS.length, 0, PHOTOS.length - 1, PHOTOS);
-  var object = {
+  var RandomObject = {
     'author': {
-      'avatar': 'img/avatars/user0' + xx + '.png'
+      'avatar': 'img/avatars/user0' + xx.toString() + '.png'
     },
     'offer': {
-      'title': 'Hi',
-      'address': xLoc + ', ' + yLoc,
+      'title': 'Тебе к нам)',
+      'address': xLoc.toString() + ', ' + yLoc.toString(),
       'price': price,
       'type': type,
       'rooms': rooms,
@@ -71,7 +66,7 @@ var getRandomObject = function () {
       'checkin': chekin,
       'checkout': chekout,
       'features': features,
-      'description': 'Hello!',
+      'description': 'Лучшие номера только у нас! Спешите забронировать!',
       'photos': photos
     },
     'location': {
@@ -79,29 +74,29 @@ var getRandomObject = function () {
       'y': yLoc
     }
   };
-  return object;
-};
 
-for (var j = 0; j < ARRAY_ELEMENT_NUMBER; j++) {
-  var currObject = getRandomObject();
-  array.push(currObject);
-}
+  return RandomObject;
+};
 
 var map = document.querySelector('.map');
 map.classList.remove('map--faded');
-
-var mapPin = document.querySelector('#pin').content.querySelector('.map__pin');
-var templ = document.querySelector('.map__pins');
-var createButtons = function () {
-  var buttonParams = getRandomObject();
-  var butt = mapPin.cloneNode(true);
-  butt.style = 'left: ' + buttonParams.location.x + 'px; top: ' + buttonParams.location.y + 'px';
-  butt.innerHTML = '<img src="' + buttonParams.author.avatar + '" width="40" height="40" draggable="false" alt="' + buttonParams.offer.title + '">';
-  return butt;
+// creating element based on template with details from data
+var createElementFromData = function (template) {
+  var data = getRandomObject();
+  var newElement = template.cloneNode(true);
+  newElement.style = 'left: ' + data.location.x.toString() + 'px; top: ' + data.location.y.toString() + 'px';
+  newElement.innerHTML = '<img src="' + data.author.avatar + '" width="40" height="40" draggable="false" alt="' + data.offer.title + '">';
+  return newElement;
 };
-createButtons()
-var fragment = document.createDocumentFragment();
-for (var k = 0; k < ARRAY_ELEMENT_NUMBER; k++) {
-  fragment.appendChild(createButtons(k));
-}
-templ.appendChild(fragment)
+// place to fill with new elements
+var mapPins = document.querySelector('.map__pins');
+// filling container with new elements
+var fillDomWithElements = function (container) {
+  var fragment = document.createDocumentFragment();
+  for (var k = 0; k < ELEMENT_NUMBER; k++) {
+    fragment.appendChild(createElementFromData(labelTemplate));
+  }
+  container.appendChild(fragment);
+};
+
+fillDomWithElements(mapPins);
