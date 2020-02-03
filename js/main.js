@@ -14,6 +14,7 @@ var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.g
 // function to generate integer between min and max
 var generateRandomNumber = function (min, max) {
   var rand = min - 0.5 + Math.random() * (max - min + 1);
+
   return Math.round(rand);
 };
 // function to generate random number of objects
@@ -24,6 +25,7 @@ var generateRandomIndices = function (minobj, maxobj, min, max) {
     var ind = generateRandomNumber(min, max);
     randomIndices.push(ind);
   }
+
   return randomIndices;
 };
 // function to take random number of objects from data
@@ -34,6 +36,7 @@ var generateRandomParts = function (minobj, maxobj, min, max, data) {
   for (var l = 0; l < number; l++) {
     parts.push(data[indices[l]]);
   }
+
   return parts;
 };
 
@@ -52,7 +55,8 @@ var getRandomObject = function () {
   var chekout = CHECKOUTS[generateRandomNumber(0, CHECKOUTS.length - 1)];
   var features = generateRandomParts(1, FEATURES.length, 0, FEATURES.length - 1, FEATURES);
   var photos = generateRandomParts(1, PHOTOS.length, 0, PHOTOS.length - 1, PHOTOS);
-  var RandomObject = {
+
+  return {
     'author': {
       'avatar': 'img/avatars/user0' + xx.toString() + '.png'
     },
@@ -74,8 +78,6 @@ var getRandomObject = function () {
       'y': yLoc
     }
   };
-
-  return RandomObject;
 };
 
 var map = document.querySelector('.map');
@@ -86,6 +88,7 @@ var createElementFromData = function (template) {
   var newElement = template.cloneNode(true);
   newElement.style = 'left: ' + data.location.x.toString() + 'px; top: ' + data.location.y.toString() + 'px';
   newElement.innerHTML = '<img src="' + data.author.avatar + '" width="40" height="40" draggable="false" alt="' + data.offer.title + '">';
+
   return newElement;
 };
 // place to fill with new elements
